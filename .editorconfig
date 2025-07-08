@@ -1,0 +1,5 @@
+[*.{kt,kts}]
+# Kotlin style typically requires functions to start with a lowercase letter.
+# Composable functions should start with a capital letter.
+ktlint_function_naming_ignore_when_annotated_with = Composable
+ktlint_standard_multiline-expression-wrapping = disabled
