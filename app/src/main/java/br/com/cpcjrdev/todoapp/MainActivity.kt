@@ -15,7 +15,6 @@ class MainActivity : ComponentActivity() {
             TodoAppTheme {
                 MainScreen(
                     title = R.string.app_name,
-                    onAddItem = {},
                 )
             }
         }

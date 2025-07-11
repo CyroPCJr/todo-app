@@ -21,14 +21,15 @@ import br.com.cpcjrdev.presentation.R
 @Composable
 fun AddTodoTaskDialog(
     onDismiss: () -> Unit = {},
-    onConfirm: (String) -> Unit = {},
+    onConfirm: (String, String) -> Unit = { _, _ -> },
 ) {
-    var textState by remember { mutableStateOf("") }
+    var titleState by remember { mutableStateOf("") }
+    var descState by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismiss,
         confirmButton = {
-            TextButton(onClick = { onConfirm(textState) }) {
+            TextButton(onClick = { onConfirm(titleState, descState) }) {
                 Text(text = stringResource(id = R.string.dialog_btn_add))
             }
         },
@@ -45,15 +46,15 @@ fun AddTodoTaskDialog(
                 verticalArrangement = Arrangement.Center,
             ) {
                 TextField(
-                    value = textState,
-                    onValueChange = { textState = it },
+                    value = titleState,
+                    onValueChange = { titleState = it },
                     label = { Text(text = stringResource(id = R.string.dialog_add_label_title)) },
                     maxLines = 1,
                 )
 
                 TextField(
-                    value = textState,
-                    onValueChange = { textState = it },
+                    value = descState,
+                    onValueChange = { descState = it },
                     label = { Text(text = stringResource(id = R.string.dialog_add_label_desc)) },
                     maxLines = 2,
                 )
