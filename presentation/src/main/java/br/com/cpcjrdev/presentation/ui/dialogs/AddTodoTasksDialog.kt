@@ -49,7 +49,7 @@ fun AddTodoTaskDialog(
                     value = titleState,
                     onValueChange = { titleState = it },
                     label = { Text(text = stringResource(id = R.string.dialog_add_label_title)) },
-                    maxLines = 1,
+                    singleLine = true,
                 )
 
                 TextField(
