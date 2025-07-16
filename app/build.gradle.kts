@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "br.com.cpcjrdev.todoapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -61,4 +61,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(project(":presentation"))
+    implementation(project(":data"))
 }
