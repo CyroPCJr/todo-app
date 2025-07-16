@@ -1,7 +1,14 @@
 package br.com.cpcjrdev.todoapp
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import br.com.cpcjrdev.data.di.AppContainer
 
-@HiltAndroidApp
-class TodoApplication : Application()
+class TodoApplication : Application() {
+    lateinit var appContainer: AppContainer
+        private set
+
+    override fun onCreate() {
+        super.onCreate()
+        appContainer = AppContainer.getInstance(this)
+    }
+}

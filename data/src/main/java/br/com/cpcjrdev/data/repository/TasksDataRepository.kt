@@ -12,16 +12,12 @@ class TasksDataRepository(
 ) {
     fun fetchTasks(): Flow<List<Tasks>> =
         dao.getAll().map { it ->
-            if (it.isNotEmpty()) {
-                it.map { it.toTasks() }
-            } else {
-                emptyList()
-            }
+            it.map { it.toTasks() }
         }
 
-    suspend fun insertTasks(tasks: Tasks) = dao.insert(tasks.toTasksEntity())
+    suspend fun insertTasks(tasks: Tasks) = dao.insert(tasks.toTasksEntity(tasks.id))
 
-    suspend fun deleteTasks(tasks: Tasks) = dao.delete(tasks.toTasksEntity())
+    suspend fun deleteTasks(tasks: Tasks) = dao.delete(tasks.toTasksEntity(tasks.id))
 
-    suspend fun updateTasks(tasks: Tasks) = dao.update(tasks.toTasksEntity())
+    suspend fun updateTasks(tasks: Tasks) = dao.update(tasks.toTasksEntity(tasks.id))
 }

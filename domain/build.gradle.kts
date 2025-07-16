@@ -1,11 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.android.devtools.ksp)
 }
 
 android {
-    namespace = "br.com.cpcjrdev.data"
+    namespace = "br.com.cpcjrdev.domain"
     compileSdk = 36
 
     defaultConfig {
@@ -41,15 +40,9 @@ dependencies {
 //    implementation(libs.androidx.core.ktx)
 //    implementation(libs.androidx.appcompat)
 //    implementation(libs.material)
+//    testImplementation(libs.junit)
+//    androidTestImplementation(libs.androidx.junit)
+//    androidTestImplementation(libs.androidx.espresso.core)
 
-    implementation(libs.room.runtime)
-    ksp(libs.room.compiler)
-    annotationProcessor(libs.room.compiler)
-    implementation(libs.room.ktx)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-
-    implementation(project(":domain"))
+    implementation(project(":data"))
 }
