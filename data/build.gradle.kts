@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.android.devtools.ksp)
+//    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -46,6 +47,9 @@ dependencies {
     ksp(libs.room.compiler)
     annotationProcessor(libs.room.compiler)
     implementation(libs.room.ktx)
+
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hilt.compiler)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
