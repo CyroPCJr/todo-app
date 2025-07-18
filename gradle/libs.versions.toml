@@ -33,18 +33,19 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 # Room
-room-runtime = {group = "androidx.room", name = "room-runtime", version.ref = "room"}
-room-compiler = {group = "androidx.room", name = "room-compiler" , version.ref = "room"}
-room-ktx = {group = "androidx.room", name = "room-ktx", version.ref = "room"}
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 
 # Dagger Hilt (DI)
-dagger-android = {group = "com.google.dagger", name= "hilt-android", version.ref = "dagger"}
+dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
+dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android-library = { id = "com.android.library", version.ref = "agp" }
-android-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp"}
-dagger-android = { id =  "com.google.dagger.hilt.android", version.ref = "dagger"}
+android-devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "androidKsp" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 
