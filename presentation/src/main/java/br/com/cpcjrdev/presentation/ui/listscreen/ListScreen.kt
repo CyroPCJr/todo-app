@@ -30,12 +30,16 @@ import br.com.cpcjrdev.presentation.ui.theme.TodoAppTheme
 fun ListScreen(
     modifier: Modifier = Modifier,
     taskList: List<Tasks>,
+    onEditClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
 ) {
     LazyColumn(modifier = modifier) {
         items(taskList) { task ->
             CardInfo(
                 title = task.title,
                 description = task.description,
+                onEditClick = onEditClick,
+                onDeleteClick = onDeleteClick,
             )
         }
     }

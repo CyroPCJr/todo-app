@@ -3,9 +3,9 @@ package br.com.cpcjrdev.data.mappers
 import br.com.cpcjrdev.data.entities.TasksEntity
 import br.com.cpcjrdev.data.model.Tasks
 
-fun Tasks.toTasksEntity(id: Long? = null): TasksEntity =
+fun Tasks.toTasksEntity(): TasksEntity =
     TasksEntity(
-        id = id,
+        id = this.id,
         title = this.title,
         description = this.description,
     )
