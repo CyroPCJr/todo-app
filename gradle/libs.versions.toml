@@ -1,5 +1,6 @@
 [versions]
 agp = "8.11.1"
+javapoet = "1.13.0"
 kotlin = "2.2.0"
 coreKtx = "1.16.0"
 junit = "4.13.2"
@@ -15,9 +16,11 @@ androidKsp = "2.2.0-2.0.2"
 dagger = "2.57"
 mockito = "5.18.0"
 kotlinCoroutinesTest = "1.10.2"
+hiltNavigation = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+javapoet = { module = "com.squareup:javapoet", version.ref = "javapoet" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -42,12 +45,13 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 # Dagger Hilt (DI)
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "dagger" }
+dagger-hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigation"}
 
 # Mockito Unit Test
 mockito = { group = "org.mockito", name = "mockito-core", version.ref = "mockito"}
 
 # kotlinx couroutines test
-kotlinx-couroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCoroutinesTest"}
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCoroutinesTest"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
