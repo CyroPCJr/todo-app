@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.devtools.ksp)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -37,10 +38,16 @@ kotlin {
     }
 }
 
-dependencies {
+hilt {
+    enableAggregatingTask = false
+}
 
+dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
+
+    implementation(project(":data"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.appcompat)
@@ -53,15 +60,16 @@ dependencies {
 
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.dagger.hilt.navigation)
+
+    implementation(libs.javapoet)
 
     androidTestImplementation(composeBom)
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
-    testImplementation(libs.kotlinx.couroutines.test)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    implementation(project(":data"))
 }
