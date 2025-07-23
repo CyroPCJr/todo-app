@@ -17,6 +17,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -24,12 +28,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.cpcjrdev.data.model.Tasks
+import br.com.cpcjrdev.presentation.ui.dialogs.DeleteTaskDialog
+import br.com.cpcjrdev.presentation.ui.dialogs.EditTaskDialog
 import br.com.cpcjrdev.presentation.ui.theme.TodoAppTheme
+
+private enum class DialogMode { Edit, Delete }
 
 @Composable
 fun ListScreen(
     modifier: Modifier = Modifier,
     taskList: List<Tasks>,
+    onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
@@ -38,6 +47,8 @@ fun ListScreen(
             CardInfo(
                 title = task.title,
                 description = task.description,
+                onTasksChange = onTasksChange,
+                id = task.id!!,
                 onEditClick = onEditClick,
                 onDeleteClick = onDeleteClick,
             )
@@ -50,9 +61,16 @@ fun CardInfo(
     modifier: Modifier = Modifier,
     title: String = "Sample Todo",
     description: String = "This is a sample todo description",
+    onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
+    id: Long = 0,
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
+    var showDialog by remember { mutableStateOf(false) }
+    var dialogMode by remember { mutableStateOf<DialogMode?>(null) }
+    var editableTitle by remember { mutableStateOf(title) }
+    var editableDescription by remember { mutableStateOf(description) }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -66,7 +84,6 @@ fun CardInfo(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Left aligned text content
             Column(
                 modifier = Modifier.weight(1f),
             ) {
@@ -85,21 +102,58 @@ fun CardInfo(
                 )
             }
 
-            // Right aligned action buttons
             Row {
-                IconButton(onClick = onEditClick) {
+                IconButton(onClick = {
+                    dialogMode = DialogMode.Edit
+                    editableTitle = title
+                    editableDescription = description
+                    showDialog = true
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Edit,
-                        contentDescription = "Edit",
+                        contentDescription = "Edit task",
                     )
                 }
-                IconButton(onClick = onDeleteClick) {
+                IconButton(onClick = {
+                    dialogMode = DialogMode.Delete
+                    showDialog = true
+                }) {
                     Icon(
                         imageVector = Icons.Filled.Delete,
-                        contentDescription = "Delete",
+                        contentDescription = "Delete task",
                     )
                 }
             }
+        }
+    }
+
+    if (showDialog) {
+        when (dialogMode) {
+            DialogMode.Edit -> {
+                EditTaskDialog(
+                    title = editableTitle,
+                    description = editableDescription,
+                    onTitleChange = { editableTitle = it },
+                    onDescriptionChange = { editableDescription = it },
+                    onConfirm = {
+                        onTasksChange(id, editableTitle, editableDescription)
+                        onEditClick()
+                        showDialog = false
+                    },
+                    onDismiss = { showDialog = false },
+                )
+            }
+            DialogMode.Delete -> {
+                DeleteTaskDialog(
+                    onConfirm = {
+                        onTasksChange(id, "", "")
+                        onDeleteClick()
+                        showDialog = false
+                    },
+                    onDismiss = { showDialog = false },
+                )
+            }
+            else -> {}
         }
     }
 }
