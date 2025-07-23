@@ -41,46 +41,45 @@ class MainScreenViewModel
             _uiState.update { it.copy(newTaskDescription = newDesc) }
         }
 
+        fun onTasksChange(
+            id: Long? = null,
+            newTitle: String,
+            newDesc: String,
+        ) {
+            _uiState.update { it.copy(tasks = Tasks(id = id, title = newTitle, description = newDesc)) }
+        }
+
         fun addTask() {
-            val current = _uiState.value
-            val task = Tasks(title = current.newTaskTitle, description = current.newTaskDescription)
             viewModelScope.launch {
-                taskRepo.insertTasks(tasks = task)
+                taskRepo.insertTasks(tasks = _uiState.value.tasks)
                 _uiState.update {
                     it.copy(
                         showDialog = false,
-                        newTaskTitle = "",
-                        newTaskDescription = "",
+                        tasks = Tasks(),
                     )
                 }
             }
         }
 
         fun updateTask() {
-            val current = _uiState.value
-            val task = Tasks(title = current.newTaskTitle, description = current.newTaskDescription)
             viewModelScope.launch {
-                taskRepo.updateTasks(tasks = task)
+                taskRepo.updateTasks(tasks = _uiState.value.tasks)
                 _uiState.update {
                     it.copy(
                         showDialog = false,
-                        newTaskTitle = "",
-                        newTaskDescription = "",
+                        tasks = Tasks(),
                     )
                 }
             }
         }
 
         fun deleteTask() {
-            val current = _uiState.value
-            val task = Tasks(title = current.newTaskTitle, description = current.newTaskDescription)
             viewModelScope.launch {
-                taskRepo.deleteTasks(tasks = task)
+                taskRepo.deleteTasks(tasks = _uiState.value.tasks)
                 _uiState.update {
                     it.copy(
                         showDialog = false,
-                        newTaskTitle = "",
-                        newTaskDescription = "",
+                        tasks = Tasks(),
                     )
                 }
             }
@@ -90,6 +89,8 @@ class MainScreenViewModel
 data class MainScreenUiState(
     val taskList: List<Tasks> = emptyList(),
     val showDialog: Boolean = false,
+    val editingTaskId: Long? = null,
     val newTaskTitle: String = "",
     val newTaskDescription: String = "",
+    val tasks: Tasks = Tasks(),
 )

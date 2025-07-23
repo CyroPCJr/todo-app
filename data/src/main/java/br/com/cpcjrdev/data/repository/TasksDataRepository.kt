@@ -24,4 +24,6 @@ class TasksDataRepository(
     suspend fun deleteTasks(tasks: Tasks) = dao.delete(tasks.toTasksEntity())
 
     suspend fun updateTasks(tasks: Tasks) = dao.update(tasks.toTasksEntity())
+
+    fun fetchTasksById(id: Long): Flow<Tasks?> = dao.getById(id).map { it?.toTasks() }
 }

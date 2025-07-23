@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import br.com.cpcjrdev.data.model.Tasks
+import br.com.cpcjrdev.presentation.R
 import br.com.cpcjrdev.presentation.ui.dialogs.AddTodoTaskDialog
 import br.com.cpcjrdev.presentation.ui.listscreen.ListScreen
 import br.com.cpcjrdev.presentation.ui.theme.TodoAppTheme
@@ -33,6 +34,14 @@ fun MainScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val viewModel: MainScreenViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val callbacks = MainScreenCallbacks(
+        onTasksChange = viewModel::onTasksChange,
+        onDismiss = { viewModel.onShowDialog(show = false) },
+        onConfirm = viewModel::addTask,
+        onEdit = viewModel::updateTask,
+        onDelete = viewModel::deleteTask,
+    )
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -47,7 +56,7 @@ fun MainScreen(
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Add Item",
+                    contentDescription = stringResource(id = R.string.fab_add_item),
                 )
             }
         },
@@ -57,16 +66,19 @@ fun MainScreen(
             taskList = uiState.taskList,
             showDialog = uiState.showDialog,
             title = uiState.newTaskTitle,
-            onTitleChange = viewModel::onNewTaskTitleChange,
             description = uiState.newTaskDescription,
-            onDescriptionChange = viewModel::onNewTaskDescriptionChange,
-            onDismiss = { viewModel.onShowDialog(show = false) },
-            onConfirm = viewModel::addTask,
-            onEdit = viewModel::updateTask,
-            onDelete = viewModel::deleteTask,
+            callbacks = callbacks,
         )
     }
 }
+
+data class MainScreenCallbacks(
+    val onTasksChange: (Long?, String, String) -> Unit,
+    val onDismiss: () -> Unit,
+    val onConfirm: () -> Unit,
+    val onEdit: () -> Unit = {},
+    val onDelete: () -> Unit = {},
+)
 
 @Composable
 fun MainScreenContent(
@@ -74,29 +86,24 @@ fun MainScreenContent(
     taskList: List<Tasks>,
     showDialog: Boolean,
     title: String,
-    onTitleChange: (String) -> Unit,
     description: String,
-    onDescriptionChange: (String) -> Unit,
-    onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
-    onEdit: () -> Unit = {},
-    onDelete: () -> Unit = {},
+    callbacks: MainScreenCallbacks,
 ) {
     ListScreen(
         modifier = modifier,
         taskList = taskList,
-        onEditClick = onEdit,
-        onDeleteClick = onDelete,
+        onTasksChange = callbacks.onTasksChange,
+        onEditClick = callbacks.onEdit,
+        onDeleteClick = callbacks.onDelete,
     )
 
     if (showDialog) {
         AddTodoTaskDialog(
             title = title,
-            onTitleChange = onTitleChange,
+            onTasksChange = callbacks.onTasksChange,
             description = description,
-            onDescriptionChange = onDescriptionChange,
-            onDismiss = onDismiss,
-            onConfirm = onConfirm,
+            onDismiss = callbacks.onDismiss,
+            onConfirm = callbacks.onConfirm,
         )
     }
 }
@@ -115,11 +122,12 @@ private fun MainScreeContentPreview() {
             taskList = mockTaskList,
             showDialog = false,
             title = "",
-            onTitleChange = {},
             description = "",
-            onDescriptionChange = {},
-            onDismiss = {},
-            onConfirm = {},
+            callbacks = MainScreenCallbacks(
+                onTasksChange = { _, _, _ -> },
+                onDismiss = {},
+                onConfirm = {},
+            ),
         )
     }
 }
