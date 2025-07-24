@@ -38,6 +38,8 @@ private enum class DialogMode { Edit, Delete }
 fun ListScreen(
     modifier: Modifier = Modifier,
     taskList: List<Tasks>,
+    titleErrorMessage: String = "",
+    descriptionErrorMessage: String = "",
     onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
@@ -47,6 +49,8 @@ fun ListScreen(
             CardInfo(
                 title = task.title,
                 description = task.description,
+                titleErrorMessage = titleErrorMessage,
+                descriptionErrorMessage = descriptionErrorMessage,
                 onTasksChange = onTasksChange,
                 id = task.id!!,
                 onEditClick = onEditClick,
@@ -61,6 +65,8 @@ fun CardInfo(
     modifier: Modifier = Modifier,
     title: String = "Sample Todo",
     description: String = "This is a sample todo description",
+    titleErrorMessage: String = "",
+    descriptionErrorMessage: String = "",
     onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     id: Long = 0,
     onEditClick: () -> Unit = {},
@@ -133,6 +139,8 @@ fun CardInfo(
                 EditTaskDialog(
                     title = editableTitle,
                     description = editableDescription,
+                    titleErrorMessage = titleErrorMessage,
+                    descriptionErrorMessage = descriptionErrorMessage,
                     onTitleChange = { editableTitle = it },
                     onDescriptionChange = { editableDescription = it },
                     onConfirm = {
