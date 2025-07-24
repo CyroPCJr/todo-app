@@ -14,6 +14,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 import org.mockito.junit.MockitoJUnitRunner
+import org.mockito.kotlin.any
 
 @RunWith(MockitoJUnitRunner::class)
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -26,34 +27,52 @@ class MainScreenViewModelTest {
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        viewModel = MainScreenViewModel(taskRepo)
         Mockito.`when`(taskRepo.fetchTasks()).thenReturn(flowOf(emptyList()))
+        viewModel = MainScreenViewModel(taskRepo)
     }
 
     @Test
     fun `addTask should call insertTasks on repository`() =
         runTest {
-            viewModel.onNewTaskTitleChange("Title")
-            viewModel.onNewTaskDescriptionChange("Desc")
+            viewModel.onTasksChange(id = null, newTitle = "Title", newDesc = "Desc")
             viewModel.addTask()
             verify(taskRepo).insertTasks(tasks = Tasks(title = "Title", description = "Desc"))
         }
 
     @Test
+    fun `addTask should NOT call insertTasks when title is blank`() =
+        runTest {
+            viewModel.onTasksChange(id = null, newTitle = "", newDesc = "desc")
+            viewModel.addTask()
+            verify(taskRepo, Mockito.never()).insertTasks(any())
+        }
+
+    @Test
+    fun `addTask should NOT call insertTasks when description is blank`() =
+        runTest {
+            viewModel.onTasksChange(id = null, newTitle = "title", newDesc = "")
+            viewModel.addTask()
+            verify(taskRepo, Mockito.never()).insertTasks(any())
+        }
+
+    @Test
     fun `deleteTask should call deleteTasks on repository`() =
         runTest {
-            viewModel.onNewTaskTitleChange("Title")
-            viewModel.onNewTaskDescriptionChange("Desc")
+            viewModel.onTasksChange(id = null, newTitle = "Title", newDesc = "Desc")
+            viewModel.addTask()
             viewModel.deleteTask()
             verify(taskRepo).deleteTasks(tasks = Tasks(title = "Title", description = "Desc"))
+            assert(viewModel.uiState.value.tasks == Tasks())
         }
 
     @Test
     fun `updateTask should call updateTasks on repository`() =
         runTest {
-            viewModel.onNewTaskTitleChange("Title")
-            viewModel.onNewTaskDescriptionChange("Desc")
+            viewModel.onTasksChange(id = null, newTitle = "Title", newDesc = "Desc")
+            viewModel.addTask()
+            viewModel.onTasksChange(id = null, newTitle = "New Title updated", newDesc = "New Description updated")
             viewModel.updateTask()
-            verify(taskRepo).updateTasks(tasks = Tasks(title = "Title", description = "Desc"))
+            verify(taskRepo).updateTasks(tasks = Tasks(title = "New Title updated", description = "New Description updated"))
+            assert(viewModel.uiState.value.tasks == Tasks())
         }
 }

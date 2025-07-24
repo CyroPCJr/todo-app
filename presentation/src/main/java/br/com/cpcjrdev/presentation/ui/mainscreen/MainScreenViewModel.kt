@@ -33,14 +33,6 @@ class MainScreenViewModel
             _uiState.update { it.copy(showDialog = show) }
         }
 
-        fun onNewTaskTitleChange(newTitle: String) {
-            _uiState.update { it.copy(newTaskTitle = newTitle) }
-        }
-
-        fun onNewTaskDescriptionChange(newDesc: String) {
-            _uiState.update { it.copy(newTaskDescription = newDesc) }
-        }
-
         fun onTasksChange(
             id: Long? = null,
             newTitle: String,
@@ -50,6 +42,12 @@ class MainScreenViewModel
         }
 
         fun addTask() {
+            if (_uiState.value.tasks.title
+                    .isBlank() || _uiState.value.tasks.description
+                    .isBlank()
+            ) {
+                return
+            }
             viewModelScope.launch {
                 taskRepo.insertTasks(tasks = _uiState.value.tasks)
                 _uiState.update {
@@ -91,6 +89,8 @@ data class MainScreenUiState(
     val showDialog: Boolean = false,
     val editingTaskId: Long? = null,
     val newTaskTitle: String = "",
+    val titleErrorMessage: String = "Title should not be empty",
     val newTaskDescription: String = "",
+    val descriptionErrorMessage: String = "Description should not be empty",
     val tasks: Tasks = Tasks(),
 )

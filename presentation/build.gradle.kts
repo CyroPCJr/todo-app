@@ -62,11 +62,9 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.dagger.hilt.navigation)
 
-    implementation(libs.javapoet)
-
     androidTestImplementation(composeBom)
     testImplementation(libs.junit)
-    testImplementation(libs.mockito)
+    testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
 
