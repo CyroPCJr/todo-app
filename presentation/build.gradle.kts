@@ -45,28 +45,21 @@ hilt {
 dependencies {
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
-
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.ui.tooling.preview)
     implementation(project(":data"))
 
-    implementation(libs.androidx.core.ktx)
+    // Only add necessary dependencies here!
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.dagger.hilt.navigation)
 
-    androidTestImplementation(composeBom)
+    // Test dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
-    androidTestImplementation(libs.androidx.junit)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
