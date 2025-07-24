@@ -63,19 +63,16 @@ fun MainScreen(
     ) { it ->
         MainScreenContent(
             modifier = Modifier.padding(it),
-            taskList = uiState.taskList,
-            showDialog = uiState.showDialog,
-            title = uiState.newTaskTitle,
-            description = uiState.newTaskDescription,
+            uiState = uiState,
             callbacks = callbacks,
         )
     }
 }
 
 data class MainScreenCallbacks(
-    val onTasksChange: (Long?, String, String) -> Unit,
-    val onDismiss: () -> Unit,
-    val onConfirm: () -> Unit,
+    val onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
+    val onDismiss: () -> Unit = {},
+    val onConfirm: () -> Unit = {},
     val onEdit: () -> Unit = {},
     val onDelete: () -> Unit = {},
 )
@@ -83,25 +80,24 @@ data class MainScreenCallbacks(
 @Composable
 fun MainScreenContent(
     modifier: Modifier = Modifier,
-    taskList: List<Tasks>,
-    showDialog: Boolean,
-    title: String,
-    description: String,
+    uiState: MainScreenUiState,
     callbacks: MainScreenCallbacks,
 ) {
     ListScreen(
         modifier = modifier,
-        taskList = taskList,
+        taskList = uiState.taskList,
         onTasksChange = callbacks.onTasksChange,
         onEditClick = callbacks.onEdit,
         onDeleteClick = callbacks.onDelete,
     )
 
-    if (showDialog) {
+    if (uiState.showDialog) {
         AddTodoTaskDialog(
-            title = title,
+            title = uiState.newTaskTitle,
+            titleErrorMessage = uiState.titleErrorMessage,
+            descriptionErrorMessage = uiState.descriptionErrorMessage,
+            description = uiState.newTaskDescription,
             onTasksChange = callbacks.onTasksChange,
-            description = description,
             onDismiss = callbacks.onDismiss,
             onConfirm = callbacks.onConfirm,
         )
@@ -116,18 +112,19 @@ private fun MainScreeContentPreview() {
         Tasks(id = 2, title = "Call Alice", description = "Wish her happy birthday"),
         Tasks(id = 3, title = "Read a book", description = "Finish reading current book"),
     )
+
+    val uiState = MainScreenUiState(
+        taskList = mockTaskList,
+        showDialog = false,
+        newTaskTitle = "",
+        newTaskDescription = "",
+    )
+
     TodoAppTheme {
         MainScreenContent(
             modifier = Modifier,
-            taskList = mockTaskList,
-            showDialog = false,
-            title = "",
-            description = "",
-            callbacks = MainScreenCallbacks(
-                onTasksChange = { _, _, _ -> },
-                onDismiss = {},
-                onConfirm = {},
-            ),
+            uiState = uiState,
+            callbacks = MainScreenCallbacks(),
         )
     }
 }

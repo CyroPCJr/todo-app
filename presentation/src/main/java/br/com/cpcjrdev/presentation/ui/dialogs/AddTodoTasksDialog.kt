@@ -7,8 +7,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,12 +23,22 @@ import br.com.cpcjrdev.presentation.R
 fun AddTodoTaskDialog(
     title: String = "",
     description: String = "",
+    titleErrorMessage: String = "",
+    descriptionErrorMessage: String = "",
     onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     onDismiss: () -> Unit = {},
     onConfirm: () -> Unit = {},
 ) {
     var titleChange by remember { mutableStateOf(title) }
     var descChange by remember { mutableStateOf(description) }
+
+    val titleError by remember {
+        derivedStateOf { titleChange.isEmpty() }
+    }
+
+    val descriptionError by remember {
+        derivedStateOf { descChange.isEmpty() }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -57,6 +67,12 @@ fun AddTodoTaskDialog(
                     onValueChange = { titleChange = it },
                     label = { Text(text = stringResource(id = R.string.dialog_label_title)) },
                     singleLine = true,
+                    supportingText = {
+                        if (titleError) {
+                            Text(text = titleErrorMessage)
+                        }
+                    },
+                    isError = titleError,
                 )
 
                 OutlinedTextField(
@@ -64,6 +80,12 @@ fun AddTodoTaskDialog(
                     onValueChange = { descChange = it },
                     label = { Text(text = stringResource(id = R.string.dialog_label_desc)) },
                     maxLines = 2,
+                    supportingText = {
+                        if (descriptionError) {
+                            Text(text = descriptionErrorMessage)
+                        }
+                    },
+                    isError = descriptionError,
                 )
             }
         },
