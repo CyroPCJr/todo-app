@@ -11,9 +11,6 @@ android {
 
     defaultConfig {
         minSdk = 26
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     buildTypes {
@@ -42,14 +39,13 @@ hilt {
 }
 
 dependencies {
+    // Room (Database)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
-
+    // Dependency Injection (Hilt)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
-
+    // Unit Testing
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }
