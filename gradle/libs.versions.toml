@@ -16,6 +16,7 @@ dagger = "2.57"
 kotlinCoroutinesTest = "1.10.2"
 hiltNavigation = "1.2.0"
 mockitoKotlin = "6.0.0"
+leakCanary = "2.14"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -50,6 +51,9 @@ mockito-kotlin = { group = "org.mockito.kotlin", name = "mockito-kotlin", versio
 
 # kotlinx couroutines test
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCoroutinesTest"}
+
+# Leak Canary
+leakcanary-android = { group = "com.squareup.leakcanary", name = "leakcanary-android", version.ref = "leakCanary"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

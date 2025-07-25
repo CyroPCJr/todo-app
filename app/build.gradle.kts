@@ -58,4 +58,6 @@ dependencies {
 
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
+
+    debugImplementation(libs.leakcanary.android)
 }
