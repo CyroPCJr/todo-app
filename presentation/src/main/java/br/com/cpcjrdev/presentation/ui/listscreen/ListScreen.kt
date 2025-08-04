@@ -1,5 +1,16 @@
 package br.com.cpcjrdev.presentation.ui.listscreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -38,24 +50,41 @@ private enum class DialogMode { Edit, Delete }
 fun ListScreen(
     modifier: Modifier = Modifier,
     taskList: List<Tasks>,
-    titleErrorMessage: String = "",
-    descriptionErrorMessage: String = "",
     onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
     LazyColumn(modifier = modifier) {
-        items(taskList) { task ->
-            CardInfo(
-                title = task.title,
-                description = task.description,
-                titleErrorMessage = titleErrorMessage,
-                descriptionErrorMessage = descriptionErrorMessage,
-                onTasksChange = onTasksChange,
-                id = task.id!!,
-                onEditClick = onEditClick,
-                onDeleteClick = onDeleteClick,
-            )
+        itemsIndexed(
+            items = taskList,
+            key = { _, task -> task.id ?: 0 },
+        ) { index, task ->
+            AnimatedVisibility(
+                visible = true,
+                enter = slideInVertically(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        delayMillis = index * 50,
+                    ),
+                ) { it } + fadeIn(
+                    animationSpec = tween(
+                        durationMillis = 300,
+                        delayMillis = index * 50,
+                    ),
+                ),
+                exit = slideOutVertically(
+                    animationSpec = tween(durationMillis = 300),
+                ) { -it } + fadeOut(
+                    animationSpec = tween(durationMillis = 300),
+                ),
+            ) {
+                CardInfo(
+                    tasks = task,
+                    onTasksChange = onTasksChange,
+                    onEditClick = onEditClick,
+                    onDeleteClick = onDeleteClick,
+                )
+            }
         }
     }
 }
@@ -63,24 +92,26 @@ fun ListScreen(
 @Composable
 fun CardInfo(
     modifier: Modifier = Modifier,
-    title: String = "Sample Todo",
-    description: String = "This is a sample todo description",
-    titleErrorMessage: String = "",
-    descriptionErrorMessage: String = "",
+    tasks: Tasks,
     onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
-    id: Long = 0,
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var dialogMode by remember { mutableStateOf<DialogMode?>(null) }
-    var editableTitle by remember { mutableStateOf(title) }
-    var editableDescription by remember { mutableStateOf(description) }
+    var editableTitle by remember { mutableStateOf(tasks.title) }
+    var editableDescription by remember { mutableStateOf(tasks.description) }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow,
+                ),
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Row(
@@ -94,12 +125,12 @@ fun CardInfo(
                 modifier = Modifier.weight(1f),
             ) {
                 Text(
-                    text = title,
+                    text = tasks.title,
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Start,
                 )
                 Text(
-                    text = description,
+                    text = tasks.description,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Start,
                     overflow = TextOverflow.Ellipsis,
@@ -111,8 +142,8 @@ fun CardInfo(
             Row {
                 IconButton(onClick = {
                     dialogMode = DialogMode.Edit
-                    editableTitle = title
-                    editableDescription = description
+                    editableTitle = tasks.title
+                    editableDescription = tasks.description
                     showDialog = true
                 }) {
                     Icon(
@@ -134,33 +165,33 @@ fun CardInfo(
     }
 
     if (showDialog) {
+        onTasksChange(tasks.id, editableTitle, editableDescription)
         when (dialogMode) {
             DialogMode.Edit -> {
                 EditTaskDialog(
                     title = editableTitle,
                     description = editableDescription,
-                    titleErrorMessage = titleErrorMessage,
-                    descriptionErrorMessage = descriptionErrorMessage,
                     onTitleChange = { editableTitle = it },
                     onDescriptionChange = { editableDescription = it },
                     onConfirm = {
-                        onTasksChange(id, editableTitle, editableDescription)
+                        onTasksChange(tasks.id, editableTitle, editableDescription)
                         onEditClick()
                         showDialog = false
                     },
                     onDismiss = { showDialog = false },
                 )
             }
+
             DialogMode.Delete -> {
                 DeleteTaskDialog(
                     onConfirm = {
-                        onTasksChange(id, "", "")
                         onDeleteClick()
                         showDialog = false
                     },
                     onDismiss = { showDialog = false },
                 )
             }
+
             else -> {}
         }
     }
@@ -170,7 +201,17 @@ fun CardInfo(
 @Composable
 fun CardInfoPreview() {
     TodoAppTheme {
-        CardInfo()
+        CardInfo(
+            tasks = Tasks(id = 0, title = "Task 1", description = "Description 1"),
+            onTasksChange = {
+                _,
+                _,
+                _,
+                ->
+            },
+            onEditClick = {},
+            onDeleteClick = {},
+        )
     }
 }
 
