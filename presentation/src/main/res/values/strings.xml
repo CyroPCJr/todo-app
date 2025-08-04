@@ -9,9 +9,9 @@
     <string name="dialog_delete_confirm">Delete</string>
     <string name="dialog_edit_title">Edit Task</string>
     <string name="dialog_btn_update">Update</string>
-
+    <string name="dialog_error_title">Title should not be empty</string>
+    <string name="dialog_error_description">Description should not be empty</string>
 
     <string name="fab_add_item">Add Item</string>
-
 
 </resources>

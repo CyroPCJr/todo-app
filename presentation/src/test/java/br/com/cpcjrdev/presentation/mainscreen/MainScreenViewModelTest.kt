@@ -61,7 +61,7 @@ class MainScreenViewModelTest {
             viewModel.onTasksChange(id = null, newTitle = "Title", newDesc = "Desc")
             viewModel.addTask()
             viewModel.deleteTask()
-            verify(taskRepo).deleteTasks(tasks = Tasks(title = "Title", description = "Desc"))
+            verify(taskRepo).deleteTasks(tasks = Tasks(id = null, title = "Title", description = "Desc"))
             assert(viewModel.uiState.value.tasks == Tasks())
         }
 

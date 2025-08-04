@@ -1,6 +1,8 @@
 package br.com.cpcjrdev.presentation.ui.mainscreen
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -14,7 +16,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,7 +43,7 @@ fun MainScreen(
 
     val callbacks = MainScreenCallbacks(
         onTasksChange = viewModel::onTasksChange,
-        onDismiss = { viewModel.onShowDialog(show = false) },
+        onDismiss = { viewModel.onHideDialog() },
         onConfirm = viewModel::addTask,
         onEdit = viewModel::updateTask,
         onDelete = viewModel::deleteTask,
@@ -51,8 +57,20 @@ fun MainScreen(
             }, scrollBehavior = scrollBehavior)
         },
         floatingActionButton = {
+            var isPressed by remember { mutableStateOf(false) }
+            val scale by animateFloatAsState(
+                targetValue = if (isPressed) 0.9f else 1f,
+                animationSpec = tween(durationMillis = 100),
+                label = "fab_scale",
+            )
+
             FloatingActionButton(
-                onClick = { viewModel.onShowDialog(show = true) },
+                onClick = {
+                    isPressed = true
+                    viewModel.onShowDialog()
+                    isPressed = false
+                },
+                modifier = Modifier.scale(scale),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
@@ -93,10 +111,6 @@ fun MainScreenContent(
 
     if (uiState.showDialog) {
         AddTodoTaskDialog(
-            title = uiState.newTaskTitle,
-            titleErrorMessage = uiState.titleErrorMessage,
-            descriptionErrorMessage = uiState.descriptionErrorMessage,
-            description = uiState.newTaskDescription,
             onTasksChange = callbacks.onTasksChange,
             onDismiss = callbacks.onDismiss,
             onConfirm = callbacks.onConfirm,
@@ -116,8 +130,6 @@ private fun MainScreeContentPreview() {
     val uiState = MainScreenUiState(
         taskList = mockTaskList,
         showDialog = false,
-        newTaskTitle = "",
-        newTaskDescription = "",
     )
 
     TodoAppTheme {
