@@ -29,8 +29,12 @@ class MainScreenViewModel
             }
         }
 
-        fun onShowDialog(show: Boolean) {
-            _uiState.update { it.copy(showDialog = show) }
+        fun onShowDialog() {
+            _uiState.update { it.copy(showDialog = true) }
+        }
+
+        fun onHideDialog() {
+            _uiState.update { it.copy(showDialog = false) }
         }
 
         fun onTasksChange(
@@ -42,10 +46,7 @@ class MainScreenViewModel
         }
 
         fun addTask() {
-            if (_uiState.value.tasks.title
-                    .isBlank() || _uiState.value.tasks.description
-                    .isBlank()
-            ) {
+            if (!_uiState.value.isValid) {
                 return
             }
             viewModelScope.launch {
@@ -60,6 +61,9 @@ class MainScreenViewModel
         }
 
         fun updateTask() {
+            if (!_uiState.value.isValid) {
+                return
+            }
             viewModelScope.launch {
                 taskRepo.updateTasks(tasks = _uiState.value.tasks)
                 _uiState.update {
@@ -87,10 +91,10 @@ class MainScreenViewModel
 data class MainScreenUiState(
     val taskList: List<Tasks> = emptyList(),
     val showDialog: Boolean = false,
-    val editingTaskId: Long? = null,
-    val newTaskTitle: String = "",
-    val titleErrorMessage: String = "Title should not be empty",
-    val newTaskDescription: String = "",
-    val descriptionErrorMessage: String = "Description should not be empty",
+//    val editingTaskId: Long? = null,
+//    val newTaskTitle: String = "",
+//    val newTaskDescription: String = "",
     val tasks: Tasks = Tasks(),
-)
+) {
+    val isValid = tasks.title.isNotBlank() && tasks.description.isNotBlank()
+}
