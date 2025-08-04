@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.devtools.ksp)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -8,10 +10,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        minSdk = 24
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
+        minSdk = 26
     }
 
     buildTypes {
@@ -35,12 +34,18 @@ kotlin {
     }
 }
 
-dependencies {
+hilt {
+    enableAggregatingTask = false
+}
 
-//    implementation(libs.androidx.core.ktx)
-//    implementation(libs.androidx.appcompat)
-//    implementation(libs.material)
+dependencies {
+    // Room (Database)
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+    // Dependency Injection (Hilt)
+    implementation(libs.dagger.hilt)
+    ksp(libs.dagger.hilt.compiler)
+    // Unit Testing
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
 }

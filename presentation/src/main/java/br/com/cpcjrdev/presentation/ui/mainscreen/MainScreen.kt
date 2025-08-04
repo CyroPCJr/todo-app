@@ -1,6 +1,8 @@
 package br.com.cpcjrdev.presentation.ui.mainscreen
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -18,10 +20,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import br.com.cpcjrdev.data.model.Tasks
+import br.com.cpcjrdev.presentation.R
 import br.com.cpcjrdev.presentation.ui.dialogs.AddTodoTaskDialog
 import br.com.cpcjrdev.presentation.ui.listscreen.ListScreen
+import br.com.cpcjrdev.presentation.ui.theme.TodoAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,9 +38,16 @@ fun MainScreen(
     @StringRes title: Int,
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    var showDialog by remember { mutableStateOf(false) }
+    val viewModel: MainScreenViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    // Add View Model
+    val callbacks = MainScreenCallbacks(
+        onTasksChange = viewModel::onTasksChange,
+        onDismiss = { viewModel.onHideDialog() },
+        onConfirm = viewModel::addTask,
+        onEdit = viewModel::updateTask,
+        onDelete = viewModel::deleteTask,
+    )
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -41,28 +57,86 @@ fun MainScreen(
             }, scrollBehavior = scrollBehavior)
         },
         floatingActionButton = {
+            var isPressed by remember { mutableStateOf(false) }
+            val scale by animateFloatAsState(
+                targetValue = if (isPressed) 0.9f else 1f,
+                animationSpec = tween(durationMillis = 100),
+                label = "fab_scale",
+            )
+
             FloatingActionButton(
-                onClick = { showDialog = true },
+                onClick = {
+                    isPressed = true
+                    viewModel.onShowDialog()
+                    isPressed = false
+                },
+                modifier = Modifier.scale(scale),
             ) {
                 Icon(
                     imageVector = Icons.Filled.Add,
-                    contentDescription = "Add Item",
+                    contentDescription = stringResource(id = R.string.fab_add_item),
                 )
             }
         },
     ) { it ->
-        ListScreen(
-            modifier = Modifier.padding(it.calculateTopPadding()),
-            taskList = listOf(),
+        MainScreenContent(
+            modifier = Modifier.padding(it),
+            uiState = uiState,
+            callbacks = callbacks,
         )
+    }
+}
 
-        if (showDialog) {
-            AddTodoTaskDialog(
-                onDismiss = { showDialog = false },
-                onConfirm = { title, description ->
-                    showDialog = false
-                },
-            )
-        }
+data class MainScreenCallbacks(
+    val onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
+    val onDismiss: () -> Unit = {},
+    val onConfirm: () -> Unit = {},
+    val onEdit: () -> Unit = {},
+    val onDelete: () -> Unit = {},
+)
+
+@Composable
+fun MainScreenContent(
+    modifier: Modifier = Modifier,
+    uiState: MainScreenUiState,
+    callbacks: MainScreenCallbacks,
+) {
+    ListScreen(
+        modifier = modifier,
+        taskList = uiState.taskList,
+        onTasksChange = callbacks.onTasksChange,
+        onEditClick = callbacks.onEdit,
+        onDeleteClick = callbacks.onDelete,
+    )
+
+    if (uiState.showDialog) {
+        AddTodoTaskDialog(
+            onTasksChange = callbacks.onTasksChange,
+            onDismiss = callbacks.onDismiss,
+            onConfirm = callbacks.onConfirm,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun MainScreeContentPreview() {
+    val mockTaskList = listOf(
+        Tasks(id = 1, title = "Buy groceries", description = "Milk, Bread, Eggs"),
+        Tasks(id = 2, title = "Call Alice", description = "Wish her happy birthday"),
+        Tasks(id = 3, title = "Read a book", description = "Finish reading current book"),
+    )
+
+    val uiState = MainScreenUiState(
+        taskList = mockTaskList,
+        showDialog = false,
+    )
+
+    TodoAppTheme {
+        MainScreenContent(
+            modifier = Modifier,
+            uiState = uiState,
+            callbacks = MainScreenCallbacks(),
+        )
     }
 }
