@@ -1,6 +1,6 @@
 # 📝 TodoApp
 
-A modern Android TODO list application built with Kotlin, Jetpack Compose, and Room Database. This project demonstrates Clean Architecture principles, state-of-the-art UI animations, and best practices in Android development.
+A modern Android TODO list application built with Kotlin, Jetpack Compose, and Room Database. This project demonstrates Clean Architecture principles, state-of-the-art UI animations, and best practices for scalable Android apps.
 
 ## ✨ Features
 
@@ -21,10 +21,11 @@ This project follows **Clean Architecture** principles with a multi-module setup
 - **🎯 App**: Application entry point and dependency injection setup
 - **🎨 Presentation**: UI layer with Jetpack Compose and ViewModels
 - **💾 Data**: Data persistence with Room Database and Repository pattern
+- **🧠 Domain**: Contains business logic, validation rules, and use cases (framework-agnostic, no Android dependencies)
 
 ### Architecture Layers
 - **Presentation Layer**: Handles UI components, state management, and user interactions
-- **Domain Layer**: Contains business logic, validation rules, and use cases
+- **Domain Layer**: Contains core business logic, validation, and use cases; independent of frameworks and platform
 - **Data Layer**: Manages data sources, database operations, and repository implementations
 
 ## 🛠️ Tech Stack
@@ -49,7 +50,7 @@ This project follows **Clean Architecture** principles with a multi-module setup
 
 ## 🧪 Testing
 
-- **Unit Tests**: Comprehensive testing for ViewModels and state holders
+- **Unit Tests**: Comprehensive testing for ViewModels, state holders, and domain logic
 - **Mockito**: Mocking framework for dependency testing
 - **JUnit**: Testing framework for business logic validation
 
@@ -91,6 +92,9 @@ TodoApp/
 ├── data/                         # Data layer module
 │   ├── src/main/java/            # Data sources, DAOs, repositories
 │   └── build.gradle.kts          # Data module build configuration
+├── domain/                       # Domain layer module (business logic, use cases)
+│   ├── src/main/java/            # Use cases, business rules, entities
+│   └── build.gradle.kts          # Domain module build configuration
 ├── presentation/                 # Presentation layer module
 │   ├── src/main/java/            # UI components, ViewModels, state holders
 │   ├── src/test/java/            # Unit tests
