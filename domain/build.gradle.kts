@@ -1,21 +1,16 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.android.devtools.ksp)
     alias(libs.plugins.dagger.hilt)
 }
 
 android {
-    namespace = "br.com.cpcjrdev.todoapp"
+    namespace = "br.com.cpcjrdev.data"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "br.com.cpcjrdev.todoapp"
         minSdk = 26
-        targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
     }
 
     buildTypes {
@@ -31,9 +26,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 kotlin {
@@ -42,23 +34,14 @@ kotlin {
     }
 }
 
-hilt {
-    enableAggregatingTask = false
-}
-
 dependencies {
-    implementation(project(":presentation"))
-    implementation(project(":domain"))
-    implementation(project(":data"))
-
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-
+    // Kotlin Coroutines
+    implementation(libs.kotlinx.coroutines.test)
+    // Dependency Injection (Hilt)
     implementation(libs.dagger.hilt)
     ksp(libs.dagger.hilt.compiler)
 
-    debugImplementation(libs.leakcanary.android)
+    // Unit Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
 }
