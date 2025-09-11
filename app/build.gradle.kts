@@ -48,7 +48,6 @@ hilt {
 
 dependencies {
     implementation(project(":presentation"))
-    implementation(project(":domain"))
     implementation(project(":data"))
 
     implementation(libs.androidx.activity.compose)

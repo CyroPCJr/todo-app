@@ -2,48 +2,31 @@ package br.com.cpcjrdev.presentation.ui.mainscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import br.com.cpcjrdev.domain.model.DomainTask
-import br.com.cpcjrdev.domain.usecase.AddTaskResult
-import br.com.cpcjrdev.domain.usecase.AddTaskUseCase
-import br.com.cpcjrdev.domain.usecase.DeleteTaskUseCase
-import br.com.cpcjrdev.domain.usecase.DomainTaskResult
-import br.com.cpcjrdev.domain.usecase.GetAllTasksUseCase
-import br.com.cpcjrdev.domain.usecase.UpdateTaskUseCase
+import br.com.cpcjrdev.data.model.Tasks
+import br.com.cpcjrdev.data.repository.TasksDataRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenViewModel
     @Inject
     constructor(
-        private val getAllTasks: GetAllTasksUseCase,
-        private val addTask: AddTaskUseCase,
-        private val updateTask: UpdateTaskUseCase,
-        private val deleteTask: DeleteTaskUseCase,
+        private val taskRepo: TasksDataRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(MainScreenUiState())
         val uiState: StateFlow<MainScreenUiState> = _uiState.asStateFlow()
 
         init {
-            loadTasks()
-        }
-
-        private fun loadTasks() {
-            getAllTasks()
-                .onEach { tasks ->
-                    _uiState.update {
-                        it.copy(
-                            taskList = tasks,
-                        )
-                    }
-                }.launchIn(viewModelScope)
+            viewModelScope.launch {
+                taskRepo.fetchTasks().collect { tasks ->
+                    _uiState.update { it.copy(taskList = tasks) }
+                }
+            }
         }
 
         fun onShowDialog() {
@@ -55,98 +38,63 @@ class MainScreenViewModel
         }
 
         fun onTasksChange(
-            id: Long = 0,
+            id: Long? = null,
             newTitle: String,
             newDesc: String,
         ) {
-            _uiState.update { it.copy(tasks = DomainTask(id = id, title = newTitle, description = newDesc)) }
+            _uiState.update { it.copy(tasks = Tasks(id = id, title = newTitle, description = newDesc)) }
         }
 
         fun addTask() {
+            if (!_uiState.value.isValid) {
+                return
+            }
             viewModelScope.launch {
-                when (
-                    val result = addTask(
-                        title = _uiState.value.tasks.title,
-                        description = _uiState.value.tasks.description,
+                taskRepo.insertTasks(tasks = _uiState.value.tasks)
+                _uiState.update {
+                    it.copy(
+                        showDialog = false,
+                        tasks = Tasks(),
                     )
-                ) {
-                    is AddTaskResult.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                showDialog = false,
-                                tasks = DomainTask(),
-                            )
-                        }
-                    }
-
-                    is AddTaskResult.ValidationError -> {
-                        _uiState.update { it.copy(errorMessage = result.errors.joinToString(", ")) }
-                    }
-
-                    is AddTaskResult.Error -> {
-                        _uiState.update { it.copy(errorMessage = result.message) }
-                    }
                 }
             }
         }
 
         fun updateTask() {
+            if (!_uiState.value.isValid) {
+                return
+            }
             viewModelScope.launch {
-//                updateTask(
-//                    task = _uiState.value.tasks,
-//                )
-//                _uiState.update {
-//                    it.copy(
-//                        showDialog = false,
-//                        tasks = DomainTask(),
-//                    )
-//                }
-
-                when (val result = updateTask(task = _uiState.value.tasks)) {
-                    is DomainTaskResult.Success -> {
-                        _uiState.update { it.copy(showDialog = false, tasks = DomainTask()) }
-                    }
-
-                    is DomainTaskResult.Failure -> {
-                        _uiState.update { it.copy(errorMessage = result.error) }
-                    }
+                taskRepo.updateTasks(tasks = _uiState.value.tasks)
+                _uiState.update {
+                    it.copy(
+                        showDialog = false,
+                        tasks = Tasks(),
+                    )
                 }
             }
         }
 
         fun deleteTask() {
             viewModelScope.launch {
-                when (
-                    val result = deleteTask(
-                        task = _uiState.value.tasks,
+                taskRepo.deleteTasks(tasks = _uiState.value.tasks)
+                _uiState.update {
+                    it.copy(
+                        showDialog = false,
+                        tasks = Tasks(),
                     )
-                ) {
-                    is DomainTaskResult.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                showDialog = false,
-                                tasks = DomainTask(),
-                            )
-                        }
-                    }
-
-                    is DomainTaskResult.Failure -> {
-                        _uiState.update {
-                            it.copy(
-                                showDialog = false,
-                                tasks = DomainTask(),
-                                errorMessage = result.error,
-                            )
-                        }
-                    }
                 }
             }
         }
     }
 
 data class MainScreenUiState(
-    val taskList: List<DomainTask> = emptyList(),
+    val taskList: List<Tasks> = emptyList(),
     val showDialog: Boolean = false,
-    val errorMessage: String? = null,
-    val tasks: DomainTask = DomainTask(),
-)
+//    val editingTaskId: Long? = null,
+//    val newTaskTitle: String = "",
+//    val newTaskDescription: String = "",
+    val tasks: Tasks = Tasks(),
+) {
+    val isValid = tasks.title.isNotBlank() && tasks.description.isNotBlank()
+}
