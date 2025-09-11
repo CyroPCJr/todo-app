@@ -39,7 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import br.com.cpcjrdev.domain.model.DomainTask
+import br.com.cpcjrdev.data.model.Tasks
 import br.com.cpcjrdev.presentation.ui.dialogs.DeleteTaskDialog
 import br.com.cpcjrdev.presentation.ui.dialogs.EditTaskDialog
 import br.com.cpcjrdev.presentation.ui.theme.TodoAppTheme
@@ -49,15 +49,15 @@ private enum class DialogMode { Edit, Delete }
 @Composable
 fun ListScreen(
     modifier: Modifier = Modifier,
-    taskList: List<DomainTask>,
-    onTasksChange: (Long, String, String) -> Unit = { _, _, _ -> },
+    taskList: List<Tasks>,
+    onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
     LazyColumn(modifier = modifier) {
         itemsIndexed(
             items = taskList,
-            key = { _, task -> task.id },
+            key = { _, task -> task.id ?: 0 },
         ) { index, task ->
             AnimatedVisibility(
                 visible = true,
@@ -92,8 +92,8 @@ fun ListScreen(
 @Composable
 fun CardInfo(
     modifier: Modifier = Modifier,
-    tasks: DomainTask,
-    onTasksChange: (Long, String, String) -> Unit = { _, _, _ -> },
+    tasks: Tasks,
+    onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
 ) {
@@ -202,7 +202,7 @@ fun CardInfo(
 fun CardInfoPreview() {
     TodoAppTheme {
         CardInfo(
-            tasks = DomainTask(id = 0, title = "Task 1", description = "Description 1"),
+            tasks = Tasks(id = 0, title = "Task 1", description = "Description 1"),
             onTasksChange = {
                 _,
                 _,
@@ -221,9 +221,9 @@ fun ListScreenPreview() {
     TodoAppTheme {
         ListScreen(
             taskList = listOf(
-                DomainTask(id = 0, title = "Task 1", description = "Description 1"),
-                DomainTask(id = 1, title = "Task 2", description = "Description 2"),
-                DomainTask(
+                Tasks(id = 0, title = "Task 1", description = "Description 1"),
+                Tasks(id = 1, title = "Task 2", description = "Description 2"),
+                Tasks(
                     id = 2,
                     title = "Task 2",
                     description = "Very long description to test the text overflow and ellipsis feature bla bla bla",

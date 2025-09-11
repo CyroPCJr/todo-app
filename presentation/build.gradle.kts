@@ -43,12 +43,12 @@ hilt {
 }
 
 dependencies {
-    implementation(project(":domain"))
-
-    implementation(platform(libs.androidx.compose.bom))
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(project(":data"))
 
     // Only add necessary dependencies here!
     implementation(libs.androidx.lifecycle.runtime.ktx)
