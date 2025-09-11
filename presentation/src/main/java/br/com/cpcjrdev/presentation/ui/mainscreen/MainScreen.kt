@@ -26,7 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import br.com.cpcjrdev.data.model.Tasks
+import br.com.cpcjrdev.domain.model.DomainTask
 import br.com.cpcjrdev.presentation.R
 import br.com.cpcjrdev.presentation.ui.dialogs.AddTodoTaskDialog
 import br.com.cpcjrdev.presentation.ui.listscreen.ListScreen
@@ -88,7 +88,7 @@ fun MainScreen(
 }
 
 data class MainScreenCallbacks(
-    val onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
+    val onTasksChange: (Long, String, String) -> Unit = { _, _, _ -> },
     val onDismiss: () -> Unit = {},
     val onConfirm: () -> Unit = {},
     val onEdit: () -> Unit = {},
@@ -122,9 +122,9 @@ fun MainScreenContent(
 @Composable
 private fun MainScreeContentPreview() {
     val mockTaskList = listOf(
-        Tasks(id = 1, title = "Buy groceries", description = "Milk, Bread, Eggs"),
-        Tasks(id = 2, title = "Call Alice", description = "Wish her happy birthday"),
-        Tasks(id = 3, title = "Read a book", description = "Finish reading current book"),
+        DomainTask(id = 1, title = "Buy groceries", description = "Milk, Bread, Eggs"),
+        DomainTask(id = 2, title = "Call Alice", description = "Wish her happy birthday"),
+        DomainTask(id = 3, title = "Read a book", description = "Finish reading current book"),
     )
 
     val uiState = MainScreenUiState(

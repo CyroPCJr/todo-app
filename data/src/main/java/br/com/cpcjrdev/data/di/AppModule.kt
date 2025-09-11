@@ -2,7 +2,8 @@ package br.com.cpcjrdev.data.di
 
 import android.content.Context
 import br.com.cpcjrdev.data.database.DatabaseProvider
-import br.com.cpcjrdev.data.repository.TasksDataRepository
+import br.com.cpcjrdev.data.repository.TasksDataRepositoryImpl
+import br.com.cpcjrdev.domain.repository.TaskRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,10 +16,10 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun provideTasksDataRepository(
+    fun provideTasksRepository(
         @ApplicationContext context: Context,
-    ): TasksDataRepository {
+    ): TaskRepository {
         val database = DatabaseProvider.getDatabase(context)
-        return TasksDataRepository(database.tasksDao())
+        return TasksDataRepositoryImpl(database.tasksDao())
     }
 }

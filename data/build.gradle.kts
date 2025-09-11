@@ -39,6 +39,7 @@ hilt {
 }
 
 dependencies {
+    implementation(project(":domain"))
     // Room (Database)
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
