@@ -21,7 +21,7 @@ import br.com.cpcjrdev.presentation.R
 
 @Composable
 fun AddTodoTaskDialog(
-    onTasksChange: (Long?, String, String) -> Unit = { _, _, _ -> },
+    onTasksChange: (Long, String, String) -> Unit = { _, _, _ -> },
     onDismiss: () -> Unit = {},
     onConfirm: () -> Unit = {},
 ) {
@@ -49,7 +49,7 @@ fun AddTodoTaskDialog(
             Button(onClick = {
                 if (dialogState.attemptSubmit()) {
                     val (title, description) = dialogState.getTitleAndDescription()
-                    onTasksChange(null, title, description)
+                    onTasksChange(0, title, description)
                     dialogState.reset()
                     onConfirm()
                 }
